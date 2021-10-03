@@ -8,6 +8,7 @@ DOTFILES_REPO="git@github.com:Oasixer/dotfiles.git"
 INSTALL_PROGRESS_DIR=/home/$USERNAME/temp/install_progress
 DISTRO=ubuntu
 UDIR=/home/$USERNAME
+DF=$UDIR/dotfiles
 
 echo "$USERNAME"
 
@@ -108,6 +109,7 @@ apt_stuff () {
     ca-certificates \
     gnupg2 \
     software-properties-common \
+    thefuck \
     silversearcher-ag
 }
 
@@ -227,7 +229,6 @@ dotfiles () {
 	# sudo -u $USERNAME git submodule init
 	# sudo -u $USERNAME git submodule update
 	# sudo -u $USERNAME git pull
-	DF=$UDIR/dotfiles
 	# sudo -u $USERNAME git clone git@github.com/Oasixer/dotfiles $DF
 	sudo -u $USERNAME ln -s $DF/.zshrc $UDIR/.zshrc
 	sudo -u $USERNAME ln -s $DF/.zshenv $UDIR/.zshenv
@@ -267,15 +268,14 @@ yarn_flake () {
 
 nvim () {
   sudo -u $USERNAME mkdir -p /home/$USERNAME/.config
-  sudo -u $USERNAME git clone https://github.com/Oasixer/nvim /home/$USERNAME/.config/nvim
+  sudo -u $USERNAME git clone git@github.com:Oasixer/nvim /home/$USERNAME/.config/nvim
 
 }
 
 node () {
 	/bin/su -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash" - $USERNAME
-	/bin/su -c "source .bashrc" - $USERNAME
-	/bin/su -c "nvm install 16.9" - $USERNAME
-	/bin/su -c "nvm use 16.9" - $USERNAME
+	/bin/su -c "/bin/zsh -i -c \"nvm install 16.9\"" - $USERNAME
+	/bin/su -c "/bin/zsh -i -c \"nvm use 16.9\"" - $USERNAME
 }
 
 # install_alacrity () {
@@ -290,7 +290,7 @@ kitty () {
 	# /bin/su -c "curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin" - $USERNAME
 
 	# if [ ! -d $UDIR/.local/bin ]; then
-	# 	sudo -u $USERNAME mkdir $UDIR/.local/bin
+		# sudo -u $USERNAME mkdir $UDIR/.local/bin
 	# fi
 
 	# # Create a symbolic link to add kitty to PATH
@@ -303,22 +303,34 @@ kitty () {
 	# sudo -u $USERNAME sed -i "s|Icon=kitty|Icon=$UDIR/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" $UDIR/.local/share/applications/kitty.desktop
 	# update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator $UDIR/.local/bin/kitty 50
 
-	sudo -u $USERNAME git clone --depth 1 git@github.com:dexpota/kitty-themes.git $UDIR/.config/kitty/kitty-themes
+	# sudo -u $USERNAME git clone --depth 1 git@github.com:dexpota/kitty-themes.git $UDIR/.config/kitty/kitty-themes
 
-	sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty.conf $UDIR/dotfiles/.config/kitty/kitty.conf
+	sudo -u $USERNAME ln -s $DF/kitty/kitty.conf $UDIR/.config/kitty/kitty.conf 
 
-	sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty-themes/themes/OneDark.conf $UDIR/.config/kitty/theme.conf
+	# sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty-themes/themes/OneDark.conf $UDIR/.config/kitty/theme.conf
 }
 
 zsh_znap() {
-	sudo -u $USERNAME git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git
-	sudo -u $USERNAME source zsh-snap/install.sh
-	sudo -u $USERNAME source $UDIR/.zshrc
-	sudo -u $USERNAME znap pull
+	# sudo -u $USERNAME mkdir $UDIR/.config/zsh-plugins
+	# sudo -u $USERNAME git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git $UDIR/.config/zsh-plugins/zsh-snap
+	# /bin/su -c "/bin/zsh -i -c source $UDIR/.config/zsh-plugins/zsh-snap/install.zsh" - $USERNAME
+	# /bin/su -c "source .zshrc" - $USERNAME
+	# /bin/su -c '/bin/zsh -i -c "znap pull"' - $USERNAME
+	/bin/su -c "chsh -s $(which zsh)" - $USERNAME
 }
 
 notes() {
-	sudo -u $USERNAME git clone git@github.com/oasixer/notes.git
+	sudo -u $USERNAME git clone git@github.com:Oasixer/notes.git $UDIR/notes
+}
+
+java() {
+	apt install -y openjdk-11-jdk
+
+	# https://stackoverflow.com/questions/24641536/how-to-set-java-home-in-linux-for-all-users?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+	if [ ! -f /etc/profile.d/java_home.sh ]; then
+		echo 'export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::")' >> /etc/profile.d/java_home.sh
+		chmod +x /etc/profile.d/java_home.sh
+	fi
 }
 
 # if [ $DISTRO == "debian" ]; then
@@ -328,6 +340,28 @@ notes() {
 		# echo "skipping sudo"
 	# fi
 # fi
+
+autokey() {
+	# apt install -y autokey-gtk
+	# sudo -u $USERNAME git clone git@github.com:Oasixer/autokey_config.git $UDIR/.config/autokey_config
+
+	# replace config dir
+	# sudo -u $USERNAME sed -i "3s/.*/    \"userCodeDir\": \"\/home\/$USERNAME\/.config\/autokey_config\/data\",/" $UDIR/.config/autokey/autokey.json
+
+	AUTOKEY_DIR=$UDIR/.config/autokey_config
+
+	folders=""
+
+	for d in $AUTOKEY_DIR/*/ ; do
+		folders="${folders}, \"${d::-1}\""
+	done
+	folders_line="    \"folders\": [${folders:2}],"
+	echo $folders_line
+
+
+	lineNum="$(grep -n '"folders"' $UDIR/.config/autokey/autokey.json | head -n 1 | cut -d: -f1)"
+	sudo -u $USERNAME sed -i "${lineNum}s#.*#${folders_line}#" $UDIR/.config/autokey/autokey.json
+}
 
 if [[ -z "$step" ]]; then
 	step_gate apt_stuff
@@ -348,6 +382,9 @@ if [[ -z "$step" ]]; then
 	step_gate notes
 	step_gate zsh_znap
 	step_gate trexo
+	step_gate java
+	step_gate autokey
+	step_gate node
 else
 	if [[ "$re_run" == "1" ]]; then
 		remove $INSTALL_PROGRESS_DIR/$step

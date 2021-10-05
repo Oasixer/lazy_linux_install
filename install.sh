@@ -122,6 +122,13 @@ trexo () {
 	snap install mattermost-desktop --beta
 	snap install android-studio --classic
 	snap install intellij-idea-ultimate --classic
+
+	sudo -u $USERNAME ssh-keygen -t rsa -C "km@trexorobotics.com"
+
+	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_rsa_trexo_bb.pub
+	& sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys
+
+	read -n 1 -p "press any letter to continue after adding ssh key to github"
 }
 
 install_ros() {
@@ -160,7 +167,7 @@ git () {
 	eval "$(sudo -u $USERNAME ssh-agent -s)"
 	ssh-add /home/$USERNAME/.ssh/id_ed25519
 	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_ed25519.pub
-	sudo -u $USERNAME google-chrome-stable https://github.com/settings/ssh/new
+	& sudo -u $USERNAME google-chrome-stable https://github.com/settings/ssh/new
 	read -n 1 -p "press any letter to continue after adding ssh key to github"
 
 	sudo -u $USERNAME git config --global user.name "Kaelan Moffett-Steinke"
@@ -352,7 +359,7 @@ autokey() {
 
 	folders=""
 
-	for d in $AUTOKEY_DIR/*/ ; do
+	for d in $AUTOKEY_DIR/data/*/ ; do
 		folders="${folders}, \"${d::-1}\""
 	done
 	folders_line="    \"folders\": [${folders:2}],"

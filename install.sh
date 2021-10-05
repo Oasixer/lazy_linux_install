@@ -126,7 +126,7 @@ trexo () {
 	sudo -u $USERNAME ssh-keygen -t rsa -C "km@trexorobotics.com"
 
 	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_rsa_trexo_bb.pub
-	& sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys
+	sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys &
 
 	read -n 1 -p "press any letter to continue after adding ssh key to github"
 }
@@ -167,7 +167,7 @@ git () {
 	eval "$(sudo -u $USERNAME ssh-agent -s)"
 	ssh-add /home/$USERNAME/.ssh/id_ed25519
 	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_ed25519.pub
-	& sudo -u $USERNAME google-chrome-stable https://github.com/settings/ssh/new
+	sudo -u $USERNAME google-chrome-stable https://github.com/settings/ssh/new &
 	read -n 1 -p "press any letter to continue after adding ssh key to github"
 
 	sudo -u $USERNAME git config --global user.name "Kaelan Moffett-Steinke"

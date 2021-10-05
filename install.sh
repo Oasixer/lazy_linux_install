@@ -315,7 +315,7 @@ zsh_znap() {
 	sudo -u $USERNAME mkdir $UDIR/.config/zsh-plugins
 	sudo -u $USERNAME git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git $UDIR/.config/zsh-plugins/zsh-snap
 	/bin/su -c "/bin/zsh -i -c source $UDIR/.config/zsh-plugins/zsh-snap/install.zsh" - $USERNAME
-	/bin/su -c "source .zshrc" - $USERNAME
+	/bin/su -c "/bin/zsh -i -c source ~/.zshrc" - $USERNAME
 	/bin/su -c '/bin/zsh -i -c "znap pull"' - $USERNAME
 	/bin/su -c "chsh -s $(which zsh)" - $USERNAME
 }
@@ -369,6 +369,7 @@ if [[ -z "$step" ]]; then
 	#step_gate ohmyzsh
 	step_gate chrome
 	step_gate git
+	step_gate nvim
 	step_gate dotfiles
 	#step_gate birame
 	#step_gate termite
@@ -378,7 +379,6 @@ if [[ -z "$step" ]]; then
 	step_gate snaps
 	step_gate node
 	step_gate kitty
-	step_gate nvim
 	step_gate docker
 	step_gate notes
 	step_gate zsh_znap

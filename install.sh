@@ -288,35 +288,35 @@ node () {
 # }
 
 kitty () {
-	# /bin/su -c "curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin" - $USERNAME
+	/bin/su -c "curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin" - $USERNAME
 
-	# if [ ! -d $UDIR/.local/bin ]; then
-		# sudo -u $USERNAME mkdir $UDIR/.local/bin
-	# fi
+	if [ ! -d $UDIR/.local/bin ]; then
+		sudo -u $USERNAME mkdir $UDIR/.local/bin
+	fi
 
 	# # Create a symbolic link to add kitty to PATH
-	# sudo -u $USERNAME ln -s $UDIR/.local/kitty.app/bin/kitty $UDIR/.local/bin/
+	sudo -u $USERNAME ln -s $UDIR/.local/kitty.app/bin/kitty $UDIR/.local/bin/
 
 	# # Place the kitty.desktop file somewhere it can be found by the OS
-	# sudo -u $USERNAME cp $UDIR/.local/kitty.app/share/applications/kitty.desktop $UDIR/.local/share/applications/
+	sudo -u $USERNAME cp $UDIR/.local/kitty.app/share/applications/kitty.desktop $UDIR/.local/share/applications/
 
 	# # Update the path to the kitty icon in the kitty.desktop file
-	# sudo -u $USERNAME sed -i "s|Icon=kitty|Icon=$UDIR/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" $UDIR/.local/share/applications/kitty.desktop
-	# update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator $UDIR/.local/bin/kitty 50
+	sudo -u $USERNAME sed -i "s|Icon=kitty|Icon=$UDIR/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" $UDIR/.local/share/applications/kitty.desktop
+	update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator $UDIR/.local/bin/kitty 50
 
-	# sudo -u $USERNAME git clone --depth 1 git@github.com:dexpota/kitty-themes.git $UDIR/.config/kitty/kitty-themes
+	sudo -u $USERNAME git clone --depth 1 git@github.com:dexpota/kitty-themes.git $UDIR/.config/kitty/kitty-themes
 
 	sudo -u $USERNAME ln -s $DF/kitty/kitty.conf $UDIR/.config/kitty/kitty.conf 
 
-	# sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty-themes/themes/OneDark.conf $UDIR/.config/kitty/theme.conf
+	sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty-themes/themes/OneDark.conf $UDIR/.config/kitty/theme.conf
 }
 
 zsh_znap() {
-	# sudo -u $USERNAME mkdir $UDIR/.config/zsh-plugins
-	# sudo -u $USERNAME git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git $UDIR/.config/zsh-plugins/zsh-snap
-	# /bin/su -c "/bin/zsh -i -c source $UDIR/.config/zsh-plugins/zsh-snap/install.zsh" - $USERNAME
-	# /bin/su -c "source .zshrc" - $USERNAME
-	# /bin/su -c '/bin/zsh -i -c "znap pull"' - $USERNAME
+	sudo -u $USERNAME mkdir $UDIR/.config/zsh-plugins
+	sudo -u $USERNAME git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git $UDIR/.config/zsh-plugins/zsh-snap
+	/bin/su -c "/bin/zsh -i -c source $UDIR/.config/zsh-plugins/zsh-snap/install.zsh" - $USERNAME
+	/bin/su -c "source .zshrc" - $USERNAME
+	/bin/su -c '/bin/zsh -i -c "znap pull"' - $USERNAME
 	/bin/su -c "chsh -s $(which zsh)" - $USERNAME
 }
 

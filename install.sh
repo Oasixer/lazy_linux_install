@@ -110,7 +110,8 @@ apt_stuff () {
     gnupg2 \
     software-properties-common \
     thefuck \
-    silversearcher-ag
+    silversearcher-ag \
+		npm
 }
 
 trexo () {
@@ -229,7 +230,7 @@ dotfiles () {
 	# sudo -u $USERNAME git submodule init
 	# sudo -u $USERNAME git submodule update
 	# sudo -u $USERNAME git pull
-	# sudo -u $USERNAME git clone git@github.com/Oasixer/dotfiles $DF
+	sudo -u $USERNAME git clone $DOTFILES_REPO $DF
 	sudo -u $USERNAME ln -s $DF/.zshrc $UDIR/.zshrc
 	sudo -u $USERNAME ln -s $DF/.zshenv $UDIR/.zshenv
 	sudo -u $USERNAME ln -s $DF/.Xmodmap $UDIR/.Xmodmap

@@ -344,12 +344,11 @@ java() {
 
 autokey() {
 	# apt install -y autokey-gtk
-	# sudo -u $USERNAME git clone git@github.com:Oasixer/autokey_config.git $UDIR/.config/autokey_config
-
+	AUTOKEY_DIR=$UDIR/.config/autokey_config
+	sudo -u $USERNAME git clone git@github.com:Oasixer/autokey_config.git $AUTOKEY_DIR
 	# replace config dir
 	# sudo -u $USERNAME sed -i "3s/.*/    \"userCodeDir\": \"\/home\/$USERNAME\/.config\/autokey_config\/data\",/" $UDIR/.config/autokey/autokey.json
 
-	AUTOKEY_DIR=$UDIR/.config/autokey_config
 
 	folders=""
 
@@ -385,7 +384,6 @@ if [[ -z "$step" ]]; then
 	step_gate trexo
 	step_gate java
 	step_gate autokey
-	step_gate node
 else
 	if [[ "$re_run" == "1" ]]; then
 		remove $INSTALL_PROGRESS_DIR/$step

@@ -16,8 +16,8 @@ USAGE="Usage: $(basename $0) [-s stepname] [--no-build] | [--help]
 
 Arguments:
   -h, --help                         show this help message and exit
-  -s, --step stepname                ie. --step ros
-  -b, --no-build                     don't build a new image
+  -s, --step stepname                ie. --step ros to only install ros
+  -r, --re_run run steps that have already been run before again anyway
 "
 usage() {
     printf "$USAGE"
@@ -123,10 +123,10 @@ trexo () {
 	snap install android-studio --classic
 	snap install intellij-idea-ultimate --classic
 
-	sudo -u $USERNAME ssh-keygen -t rsa -C "km@trexorobotics.com"
+	# sudo -u $USERNAME ssh-keygen -t rsa -C "km@trexorobotics.com"
 
 	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_rsa_trexo_bb.pub
-	sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys &
+	sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys/ > /dev/null 2>&1
 
 	read -n 1 -p "press any letter to continue after adding ssh key to github"
 }
@@ -352,9 +352,12 @@ java() {
 autokey() {
 	# apt install -y autokey-gtk
 	AUTOKEY_DIR=$UDIR/.config/autokey_config
-	sudo -u $USERNAME git clone git@github.com:Oasixer/autokey_config.git $AUTOKEY_DIR
+	# sudo -u $USERNAME git clone git@github.com:Oasixer/autokey_config.git $AUTOKEY_DIR
+
+	# DONT USE THIS PART ========
 	# replace config dir
 	# sudo -u $USERNAME sed -i "3s/.*/    \"userCodeDir\": \"\/home\/$USERNAME\/.config\/autokey_config\/data\",/" $UDIR/.config/autokey/autokey.json
+	#-----------------------------
 
 
 	folders=""

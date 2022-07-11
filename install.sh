@@ -125,10 +125,10 @@ trexo () {
 
 	# sudo -u $USERNAME ssh-keygen -t rsa -C "km@trexorobotics.com"
 
-	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_rsa_trexo_bb.pub
-	sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys/ > /dev/null 2>&1
+	# sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_rsa_trexo_bb.pub
+	# sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys/ > /dev/null 2>&1
 
-	read -n 1 -p "press any letter to continue after adding ssh key to github"
+	# read -n 1 -p "press any letter to continue after adding ssh key to github"
 }
 
 install_ros() {

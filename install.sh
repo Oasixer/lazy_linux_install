@@ -122,21 +122,24 @@ trexo () {
 	snap install mattermost-desktop --beta
 	snap install android-studio --classic
 	snap install intellij-idea-ultimate --classic
+	snap install mysql-workbench-community
+	snap connect mysql-workbench-community:password-manager-service :password-manager-service
 
 	# sudo -u $USERNAME ssh-keygen -t rsa -C "km@trexorobotics.com"
 
 	# sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_rsa_trexo_bb.pub
-	# sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys/ > /dev/null 2>&1
+	# sudo -u $USERNAME google-chrome-stable https://bitbucket.org/account/settings/ssh-keys > /dev/null 2>&1
 
 	# read -n 1 -p "press any letter to continue after adding ssh key to github"
 }
 
-install_ros() {
+ros() {
 	sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
-	apt install ros-noetic-desktop-full
-	apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
-	rosdep init
+	/bin/su -c 'curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc' - $USERNAME | apt-key add -
+	apt update
+	apt install -y ros-noetic-desktop
+	apt install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+	sudo -u $USERNAME rosdep init
 	sudo -u $USERNAME rosdep update
 	sudo -u $USERNAME mkdir -p $UDIR/catkin_ws/src
 	cd $UDIR/catkin_ws
@@ -167,7 +170,7 @@ git () {
 	eval "$(sudo -u $USERNAME ssh-agent -s)"
 	ssh-add /home/$USERNAME/.ssh/id_ed25519
 	sudo -u $USERNAME xclip -selection clipboard < /home/$USERNAME/.ssh/id_ed25519.pub
-	sudo -u $USERNAME google-chrome-stable https://github.com/settings/ssh/new &
+	sudo -u $USERNAME google-chrome-stable https://github.com/settings/ssh/new > /dev/null 2>&1
 	read -n 1 -p "press any letter to continue after adding ssh key to github"
 
 	sudo -u $USERNAME git config --global user.name "Kaelan Moffett-Steinke"
@@ -245,6 +248,8 @@ dotfiles () {
 	sudo -u $USERNAME ln -s $DF/.gitconfig $UDIR/.gitconfig
 	sudo -u $USERNAME ln -s $DF/.ideavimrc $UDIR/.ideavimrc
 	sudo -u $USERNAME ln -s $DF/.ssh/config $UDIR/.ssh/config
+	sudo -u $USERNAME ln -s $DF/kitty $UDIR/.config/kitty
+	sudo -u $USERNAME ln -s $DF/.NERDTreeBookmarks $UDIR/.NERDTreeBookmarks
 	sudo -u $USERNAME echo "sleep 4 && xmodmap ~/.Xmodmap &" >> $UDIR/.profile
 	cd $UDIR
 }
@@ -311,11 +316,11 @@ kitty () {
 	sudo -u $USERNAME sed -i "s|Icon=kitty|Icon=$UDIR/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" $UDIR/.local/share/applications/kitty.desktop
 	update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator $UDIR/.local/bin/kitty 50
 
-	sudo -u $USERNAME git clone --depth 1 git@github.com:dexpota/kitty-themes.git $UDIR/.config/kitty/kitty-themes
+	# sudo -u $USERNAME git clone --depth 1 git@github.com:dexpota/kitty-themes.git $UDIR/.config/kitty/kitty-themes
 
-	sudo -u $USERNAME ln -s $DF/kitty/kitty.conf $UDIR/.config/kitty/kitty.conf 
+	# sudo -u $USERNAME ln -s $DF/kitty/kitty.conf $UDIR/.config/kitty/kitty.conf 
 
-	sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty-themes/themes/OneDark.conf $UDIR/.config/kitty/theme.conf
+	# sudo -u $USERNAME ln -s $UDIR/.config/kitty/kitty-themes/themes/OneDark.conf $UDIR/.config/kitty/theme.conf
 }
 
 zsh_znap() {
@@ -332,7 +337,7 @@ notes() {
 }
 
 java() {
-	apt install -y openjdk-11-jdk
+	apt install -y openjdk-11-jdk openjdk-16-jdk
 
 	# https://stackoverflow.com/questions/24641536/how-to-set-java-home-in-linux-for-all-users?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	if [ ! -f /etc/profile.d/java_home.sh ]; then
